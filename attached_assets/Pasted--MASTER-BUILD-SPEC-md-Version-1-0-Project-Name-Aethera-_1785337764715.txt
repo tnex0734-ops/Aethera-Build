@@ -1,0 +1,466 @@
+# MASTER_BUILD_SPEC.md
+
+Version: 1.0
+
+Project Name: Aethera
+
+Status: Engineering Source of Truth
+
+Author: OpenAI Architecture Specification
+
+---
+
+# 1. Introduction
+
+## 1.1 Purpose
+
+This document is the complete engineering specification for Aethera.
+
+It defines exactly how the product should be designed, architected, implemented, tested, and deployed.
+
+Every decision made by the development agent must follow this specification.
+
+If implementation conflicts with this document, this document always takes precedence.
+
+This specification is intended for AI-assisted software engineering tools such as Replit Agent.
+
+The objective is not merely to generate code but to generate a coherent, maintainable, production-quality educational platform.
+
+---
+
+# 2. Product Vision
+
+## Mission
+
+Aethera exists to make high-quality education accessible to every student through an AI-powered learning companion.
+
+The objective is not to answer questions.
+
+The objective is to teach.
+
+Students should finish every interaction understanding more than they did before.
+
+Knowledge should compound.
+
+Curiosity should increase.
+
+Learning should become enjoyable.
+
+---
+
+## Vision
+
+Most AI assistants optimise for productivity.
+
+Aethera optimises for understanding.
+
+Instead of replacing teachers,
+
+Aethera amplifies learning.
+
+It acts like a patient tutor available at any time.
+
+The AI should never feel robotic.
+
+It should feel calm,
+
+encouraging,
+
+knowledgeable,
+
+and adaptive.
+
+---
+
+# 3. Product Principles
+
+Every engineering decision must satisfy these principles.
+
+## Principle 1
+
+Learning comes before answers.
+
+Never optimise for speed if understanding is reduced.
+
+---
+
+## Principle 2
+
+The interface should disappear.
+
+Students should think about learning,
+
+not software.
+
+Navigation should be minimal.
+
+Everything important happens inside one workspace.
+
+---
+
+## Principle 3
+
+Accessibility over complexity.
+
+The platform must work well on:
+
+- low-end Android phones
+- tablets
+- laptops
+- desktops
+- slow internet
+
+Avoid unnecessary heavy animations.
+
+Prefer perceived performance over visual complexity.
+
+---
+
+## Principle 4
+
+Every feature must reduce friction.
+
+If a feature increases complexity without significantly improving learning,
+
+do not implement it.
+
+---
+
+## Principle 5
+
+Students make mistakes.
+
+The software should recover gracefully.
+
+Misspellings,
+
+cropped uploads,
+
+mixed languages,
+
+bad handwriting,
+
+partial questions,
+
+and blurry images should all be handled intelligently.
+
+---
+
+# 4. Target Users
+
+Primary Audience:
+
+Students from Grades 6–12.
+
+Secondary Audience:
+
+College students using the platform for concept revision.
+
+Future Audience:
+
+Teachers.
+
+Parents.
+
+Coaching institutes.
+
+---
+
+# 5. User Personas
+
+## Persona A
+
+Age: 13
+
+Grade: 8
+
+Device:
+
+Budget Android phone.
+
+Internet:
+
+Intermittent mobile data.
+
+Needs:
+
+Homework help.
+
+Concept explanations.
+
+Exam preparation.
+
+Visual learning.
+
+Preferred language:
+
+English mixed with Telugu.
+
+---
+
+## Persona B
+
+Age: 16
+
+Preparing for board examinations.
+
+Needs:
+
+Fast revision.
+
+Practice questions.
+
+Diagrams.
+
+Chapter summaries.
+
+Weak-topic tracking.
+
+---
+
+## Persona C
+
+Competitive exam learner.
+
+Needs:
+
+Advanced explanations.
+
+Adaptive quizzes.
+
+Performance analytics.
+
+---
+
+# 6. Product Scope
+
+## Included
+
+AI chat.
+
+Image uploads.
+
+OCR.
+
+Question reconstruction.
+
+Educational explanations.
+
+Generated diagrams.
+
+Flowcharts.
+
+Concept maps.
+
+Examples.
+
+Practice questions.
+
+Summaries.
+
+Conversation history.
+
+Learning memory.
+
+Multilingual support.
+
+Responsive interface.
+
+Authentication.
+
+Cloud storage.
+
+---
+
+## Excluded (Version 1)
+
+Teacher dashboard.
+
+Parent dashboard.
+
+Assignments.
+
+Live classes.
+
+Video calling.
+
+Social features.
+
+Gamification.
+
+Course marketplace.
+
+Payments.
+
+Admin CMS.
+
+Focus exclusively on delivering the best possible AI learning experience.
+
+---
+
+# 7. Core User Journey
+
+A student opens Aethera.
+
+↓
+
+They type a question,
+
+or upload an image,
+
+or speak using voice input.
+
+↓
+
+The system detects the input type.
+
+↓
+
+Language is identified automatically.
+
+↓
+
+If an image is uploaded:
+
+Run OCR.
+
+Recover text.
+
+Correct OCR mistakes.
+
+Identify diagrams.
+
+Detect equations.
+
+↓
+
+Reconstruct the student's intended question.
+
+↓
+
+Map the question to the curriculum.
+
+↓
+
+Determine difficulty.
+
+↓
+
+Determine explanation style.
+
+↓
+
+Generate an explanation.
+
+↓
+
+Generate supporting educational visuals if appropriate.
+
+↓
+
+Generate a worked example.
+
+↓
+
+Generate practice questions.
+
+↓
+
+Generate a concise summary.
+
+↓
+
+Update learning memory.
+
+↓
+
+Return the response in a single conversational flow.
+
+The user never switches pages during this process.
+
+---
+
+# 8. Product Requirements
+
+The application must feel like one continuous workspace.
+
+There should be no concept of separate tools.
+
+OCR is not a feature.
+
+It is simply something that happens when an image is uploaded.
+
+Translation is not a feature.
+
+It happens automatically.
+
+Visual generation is not a feature.
+
+It appears whenever it improves understanding.
+
+Memory is invisible.
+
+Students should never need to manage it.
+
+The AI should remember what is educationally useful while respecting privacy.
+
+---
+
+# 9. Functional Requirements
+
+The platform shall:
+
+- Accept text input.
+- Accept image uploads.
+- Accept PDF uploads.
+- Accept voice input (future-ready interface, optional in MVP).
+- Detect handwritten and printed content.
+- Support multilingual questions.
+- Detect subject and topic.
+- Generate grade-appropriate explanations.
+- Produce diagrams when beneficial.
+- Generate quizzes.
+- Maintain conversation context.
+- Track learning progress.
+- Suggest revision topics.
+- Recover from incomplete questions.
+
+All features must be integrated into a single conversational interface.
+
+---
+
+# 10. Non-Functional Requirements
+
+Performance:
+
+First response should begin streaming as quickly as practical after processing starts.
+
+Scalability:
+
+Architecture should support thousands of concurrent users without major redesign.
+
+Maintainability:
+
+Every module must have one clear responsibility.
+
+Security:
+
+All user uploads must be validated.
+
+Sensitive credentials must never be exposed.
+
+Reliability:
+
+Failures in one subsystem must not crash the entire application.
+
+Accessibility:
+
+Keyboard navigation.
+
+Screen reader compatibility.
+
+Readable typography.
+
+Responsive layouts.
+
+Mobile-first design.

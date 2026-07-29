@@ -3,13 +3,29 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Aethera AI-powered educational platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: sessions
+    description: Learning sessions (conversations)
+  - name: messages
+    description: Messages within sessions
+  - name: chat
+    description: AI chat
+  - name: uploads
+    description: File uploads
+  - name: memory
+    description: Learning memory
+  - name: quizzes
+    description: Practice quizzes
+  - name: profile
+    description: User profile
+  - name: dashboard
+    description: Dashboard summary
 paths:
   /healthz:
     get:
@@ -24,6 +40,319 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /sessions:
+    get:
+      operationId: listSessions
+      tags: [sessions]
+      summary: List all sessions
+      responses:
+        "200":
+          description: List of sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Session"
+    post:
+      operationId: createSession
+      tags: [sessions]
+      summary: Create a new session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionInput"
+      responses:
+        "201":
+          description: Created session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+
+  /sessions/{id}:
+    get:
+      operationId: getSession
+      tags: [sessions]
+      summary: Get session with messages
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Session with messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionWithMessages"
+        "404":
+          description: Session not found
+    patch:
+      operationId: updateSession
+      tags: [sessions]
+      summary: Update session title
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionUpdate"
+      responses:
+        "200":
+          description: Updated session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+        "404":
+          description: Session not found
+    delete:
+      operationId: deleteSession
+      tags: [sessions]
+      summary: Delete a session
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Session not found
+
+  /sessions/{id}/messages:
+    get:
+      operationId: listMessages
+      tags: [messages]
+      summary: List messages in a session
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+
+  /chat:
+    post:
+      operationId: sendChat
+      tags: [chat]
+      summary: Send a message and get AI response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatInput"
+      responses:
+        "200":
+          description: AI response message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+
+  /uploads:
+    post:
+      operationId: createUpload
+      tags: [uploads]
+      summary: Record an upload and trigger OCR processing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadInput"
+      responses:
+        "201":
+          description: Upload record with OCR result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Upload"
+    get:
+      operationId: listUploads
+      tags: [uploads]
+      summary: List uploads for the current user
+      responses:
+        "200":
+          description: List of uploads
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Upload"
+
+  /memory:
+    get:
+      operationId: getMemory
+      tags: [memory]
+      summary: Get learning memory for the current user
+      responses:
+        "200":
+          description: Learning memory
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LearningMemory"
+    patch:
+      operationId: updateMemory
+      tags: [memory]
+      summary: Update learning memory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LearningMemoryUpdate"
+      responses:
+        "200":
+          description: Updated learning memory
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LearningMemory"
+
+  /quizzes:
+    get:
+      operationId: listQuizzes
+      tags: [quizzes]
+      summary: List quizzes for the current user
+      responses:
+        "200":
+          description: List of quizzes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Quiz"
+    post:
+      operationId: createQuiz
+      tags: [quizzes]
+      summary: Generate a quiz on a topic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuizInput"
+      responses:
+        "201":
+          description: Generated quiz
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quiz"
+
+  /quizzes/{id}/submit:
+    post:
+      operationId: submitQuiz
+      tags: [quizzes]
+      summary: Submit quiz answers and get score
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuizSubmission"
+      responses:
+        "200":
+          description: Quiz result with score
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuizResult"
+        "404":
+          description: Quiz not found
+
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+    patch:
+      operationId: updateProfile
+      tags: [profile]
+      summary: Update user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary statistics
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/activity:
+    get:
+      operationId: getRecentActivity
+      tags: [dashboard]
+      summary: Get recent learning activity feed
+      responses:
+        "200":
+          description: Recent activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +363,321 @@ components:
       required:
         - status
 
+    Session:
+      type: object
+      required: [id, title, messageCount, createdAt, updatedAt]
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        subject:
+          type: ["string", "null"]
+        messageCount:
+          type: number
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    SessionWithMessages:
+      type: object
+      required: [id, title, messageCount, createdAt, updatedAt, messages]
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        subject:
+          type: ["string", "null"]
+        messageCount:
+          type: number
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+
+    SessionInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        subject:
+          type: string
+
+    SessionUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        subject:
+          type: string
+
+    Message:
+      type: object
+      required: [id, sessionId, role, content, createdAt]
+      properties:
+        id:
+          type: number
+        sessionId:
+          type: number
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+        subject:
+          type: ["string", "null"]
+        hasVisual:
+          type: boolean
+        createdAt:
+          type: string
+
+    ChatInput:
+      type: object
+      required: [content, sessionId]
+      properties:
+        content:
+          type: string
+          minLength: 1
+        sessionId:
+          type: number
+        uploadId:
+          type: ["number", "null"]
+
+    ChatResponse:
+      type: object
+      required: [userMessage, assistantMessage, sessionId]
+      properties:
+        userMessage:
+          $ref: "#/components/schemas/Message"
+        assistantMessage:
+          $ref: "#/components/schemas/Message"
+        sessionId:
+          type: number
+        detectedSubject:
+          type: ["string", "null"]
+
+    Upload:
+      type: object
+      required: [id, type, storageUrl, createdAt]
+      properties:
+        id:
+          type: number
+        type:
+          type: string
+          enum: [image, pdf]
+        storageUrl:
+          type: string
+        ocrText:
+          type: ["string", "null"]
+        confidence:
+          type: ["number", "null"]
+        createdAt:
+          type: string
+
+    UploadInput:
+      type: object
+      required: [type, storageUrl]
+      properties:
+        type:
+          type: string
+          enum: [image, pdf]
+        storageUrl:
+          type: string
+
+    LearningMemory:
+      type: object
+      required: [id, userId, weakTopics, strongTopics, learningStyle, preferredLanguage, updatedAt]
+      properties:
+        id:
+          type: number
+        userId:
+          type: number
+        weakTopics:
+          type: array
+          items:
+            type: string
+        strongTopics:
+          type: array
+          items:
+            type: string
+        learningStyle:
+          type: ["string", "null"]
+        preferredLanguage:
+          type: string
+        updatedAt:
+          type: string
+
+    LearningMemoryUpdate:
+      type: object
+      properties:
+        weakTopics:
+          type: array
+          items:
+            type: string
+        strongTopics:
+          type: array
+          items:
+            type: string
+        learningStyle:
+          type: string
+        preferredLanguage:
+          type: string
+
+    Quiz:
+      type: object
+      required: [id, topic, difficulty, questions, score, completed, createdAt]
+      properties:
+        id:
+          type: number
+        topic:
+          type: string
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuizQuestion"
+        score:
+          type: ["number", "null"]
+        completed:
+          type: boolean
+        createdAt:
+          type: string
+
+    QuizQuestion:
+      type: object
+      required: [id, question, options, correctAnswer]
+      properties:
+        id:
+          type: number
+        question:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        correctAnswer:
+          type: string
+        explanation:
+          type: ["string", "null"]
+
+    QuizInput:
+      type: object
+      required: [topic, difficulty]
+      properties:
+        topic:
+          type: string
+          minLength: 1
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        questionCount:
+          type: number
+
+    QuizSubmission:
+      type: object
+      required: [answers]
+      properties:
+        answers:
+          type: array
+          items:
+            type: object
+            required: [questionId, answer]
+            properties:
+              questionId:
+                type: number
+              answer:
+                type: string
+
+    QuizResult:
+      type: object
+      required: [quizId, score, total, percentage, feedback]
+      properties:
+        quizId:
+          type: number
+        score:
+          type: number
+        total:
+          type: number
+        percentage:
+          type: number
+        feedback:
+          type: string
+
+    Profile:
+      type: object
+      required: [id, name, email, grade, preferredLanguage, createdAt]
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: ["string", "null"]
+        grade:
+          type: ["string", "null"]
+        preferredLanguage:
+          type: string
+        createdAt:
+          type: string
+
+    ProfileUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        grade:
+          type: string
+        preferredLanguage:
+          type: string
+        avatar:
+          type: string
+
+    DashboardSummary:
+      type: object
+      required: [totalSessions, totalMessages, quizzesCompleted, averageQuizScore, topSubjects, learningStreak]
+      properties:
+        totalSessions:
+          type: number
+        totalMessages:
+          type: number
+        quizzesCompleted:
+          type: number
+        averageQuizScore:
+          type: ["number", "null"]
+        topSubjects:
+          type: array
+          items:
+            type: string
+        learningStreak:
+          type: number
+
+    ActivityItem:
+      type: object
+      required: [id, type, title, subject, createdAt]
+      properties:
+        id:
+          type: number
+        type:
+          type: string
+          enum: [session, quiz, upload]
+        title:
+          type: string
+        subject:
+          type: ["string", "null"]
+        score:
+          type: ["number", "null"]
+        createdAt:
+          type: string

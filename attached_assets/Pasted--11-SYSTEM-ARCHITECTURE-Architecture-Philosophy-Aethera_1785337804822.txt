@@ -1,0 +1,867 @@
+# 11. SYSTEM ARCHITECTURE
+
+## Architecture Philosophy
+
+Aethera is NOT a chatbot.
+
+It is an AI-powered educational platform.
+
+The architecture must therefore separate
+
+- UI
+- Business Logic
+- AI
+- OCR
+- Database
+- Storage
+
+into independent modules.
+
+Each module should be replaceable without rewriting the entire application.
+
+Follow Clean Architecture principles.
+
+Presentation Layer
+
+↓
+
+Application Layer
+
+↓
+
+Domain Layer
+
+↓
+
+Infrastructure Layer
+
+Never allow UI components to directly communicate with AI providers.
+
+Never call OpenAI/Gemini directly from React components.
+
+Always use the Backend API.
+
+---
+
+# 12. High-Level System Architecture
+
+                    Browser (Next.js)
+
+                           │
+
+                           ▼
+
+                    API Route Layer
+
+                           │
+
+                           ▼
+
+                 Backend Service Layer
+
+        ┌─────────────┬──────────────┬──────────────┐
+
+        ▼             ▼              ▼
+
+   OCR Service    AI Service     Auth Service
+
+        ▼             ▼              ▼
+
+  Vision Model   OpenRouter      Clerk/Auth
+
+        ▼             ▼
+
+        └─────────────┐
+
+                      ▼
+
+             Learning Engine
+
+                      ▼
+
+             Memory Manager
+
+                      ▼
+
+               PostgreSQL
+
+                      ▼
+
+              Supabase Storage
+
+---
+
+# 13. Recommended Tech Stack
+
+Framework
+
+Next.js 15
+
+Language
+
+TypeScript
+
+Styling
+
+TailwindCSS
+
+UI Components
+
+shadcn/ui
+
+Animation
+
+Framer Motion
+
+Icons
+
+Lucide React
+
+Database
+
+PostgreSQL
+
+ORM
+
+Prisma
+
+Storage
+
+Supabase Storage
+
+Authentication
+
+Clerk
+
+(or Supabase Auth)
+
+AI Gateway
+
+OpenRouter
+
+Primary Models
+
+Gemini 2.5 Pro
+
+Claude Sonnet
+
+GPT-5
+
+OCR
+
+Google Vision API
+
+Fallback OCR
+
+Tesseract
+
+Caching
+
+Redis
+
+Hosting
+
+Frontend
+
+Vercel
+
+Backend
+
+Railway
+
+Database
+
+Supabase
+
+Analytics
+
+PostHog
+
+Error Monitoring
+
+Sentry
+
+---
+
+# 14. Folder Structure
+
+src/
+
+    app/
+
+    components/
+
+        ui/
+
+        chat/
+
+        upload/
+
+        diagrams/
+
+        quiz/
+
+        common/
+
+    features/
+
+        authentication/
+
+        chat/
+
+        upload/
+
+        ai/
+
+        history/
+
+        profile/
+
+    services/
+
+        ai/
+
+        ocr/
+
+        auth/
+
+        storage/
+
+        analytics/
+
+    lib/
+
+        prisma.ts
+
+        redis.ts
+
+        logger.ts
+
+        utils.ts
+
+    hooks/
+
+    types/
+
+    prompts/
+
+    agents/
+
+    constants/
+
+    middleware/
+
+    styles/
+
+    public/
+
+prisma/
+
+server/
+
+docs/
+
+---
+
+# 15. Folder Responsibilities
+
+app/
+
+Contains routes.
+
+No business logic.
+
+components/
+
+Reusable UI.
+
+Never fetch data directly.
+
+services/
+
+Business logic.
+
+Database calls.
+
+API calls.
+
+AI.
+
+OCR.
+
+Everything important lives here.
+
+hooks/
+
+Reusable hooks.
+
+No API logic.
+
+lib/
+
+Shared helpers.
+
+Configuration.
+
+Clients.
+
+Utilities.
+
+prompts/
+
+Every AI prompt.
+
+Never inline prompts inside code.
+
+agents/
+
+Prompt orchestration.
+
+Memory.
+
+Reasoning.
+
+Workflow.
+
+---
+
+# 16. Component Rules
+
+Every component must satisfy
+
+Single Responsibility Principle.
+
+A component should do one thing.
+
+Examples
+
+ChatMessage
+
+UploadButton
+
+Sidebar
+
+ConversationHeader
+
+QuizCard
+
+DiagramCard
+
+LoadingBubble
+
+SummaryCard
+
+Do not create giant components over 300 lines.
+
+Split aggressively.
+
+---
+
+# 17. State Management
+
+Server State
+
+TanStack Query
+
+Local State
+
+React State
+
+Global State
+
+Context API
+
+Never use Context for server data.
+
+Never duplicate state.
+
+Avoid prop drilling.
+
+---
+
+# 18. Routing
+
+/
+
+Landing
+
+/chat
+
+Main workspace
+
+/history
+
+Conversation history
+
+/profile
+
+Settings
+
+No additional pages.
+
+Everything educational happens inside
+
+/chat
+
+---
+
+# 19. Authentication Flow
+
+User opens application
+
+↓
+
+Landing page
+
+↓
+
+Sign in with Google
+
+↓
+
+Create user record
+
+↓
+
+Create initial learning profile
+
+↓
+
+Redirect
+
+↓
+
+Chat
+
+Never ask unnecessary onboarding questions.
+
+Collect preferences gradually.
+
+---
+
+# 20. Database Schema
+
+Users
+
+id
+
+email
+
+name
+
+avatar
+
+preferredLanguage
+
+grade
+
+createdAt
+
+updatedAt
+
+---
+
+Sessions
+
+id
+
+userId
+
+title
+
+createdAt
+
+updatedAt
+
+---
+
+Messages
+
+id
+
+sessionId
+
+role
+
+content
+
+attachments
+
+model
+
+createdAt
+
+---
+
+Uploads
+
+id
+
+userId
+
+type
+
+storageUrl
+
+ocrText
+
+confidence
+
+createdAt
+
+---
+
+LearningMemory
+
+id
+
+userId
+
+weakTopics
+
+strongTopics
+
+learningStyle
+
+preferredLanguage
+
+updatedAt
+
+---
+
+Quizzes
+
+id
+
+userId
+
+topic
+
+difficulty
+
+score
+
+createdAt
+
+---
+
+GeneratedVisuals
+
+id
+
+sessionId
+
+type
+
+url
+
+prompt
+
+createdAt
+
+---
+
+Analytics
+
+id
+
+userId
+
+tokensUsed
+
+latency
+
+ocrTime
+
+createdAt
+
+---
+
+# 21. Database Relationships
+
+User
+
+↓
+
+Many Sessions
+
+Session
+
+↓
+
+Many Messages
+
+User
+
+↓
+
+Many Uploads
+
+User
+
+↓
+
+Many Quizzes
+
+Session
+
+↓
+
+Many GeneratedVisuals
+
+User
+
+↓
+
+One LearningMemory
+
+---
+
+# 22. API Structure
+
+/api/auth
+
+/api/chat
+
+/api/upload
+
+/api/ocr
+
+/api/quiz
+
+/api/history
+
+/api/memory
+
+/api/profile
+
+/api/feedback
+
+/api/analytics
+
+---
+
+# 23. API Response Format
+
+Success
+
+{
+  "success": true,
+  "data": {},
+  "error": null
+}
+
+Failure
+
+{
+  "success": false,
+  "data": null,
+  "error": {
+      "code": "...",
+      "message": "..."
+  }
+}
+
+Always use this format.
+
+Never return inconsistent responses.
+
+---
+
+# 24. File Upload Pipeline
+
+Student uploads image
+
+↓
+
+Validate
+
+↓
+
+Compress
+
+↓
+
+Store temporarily
+
+↓
+
+OCR
+
+↓
+
+Language Detection
+
+↓
+
+Question Reconstruction
+
+↓
+
+Delete temporary file
+
+↓
+
+Store processed result
+
+↓
+
+Send to AI
+
+---
+
+# 25. Error Recovery
+
+If OCR confidence >90%
+
+Continue automatically.
+
+If OCR confidence between 70–90%
+
+Attempt correction.
+
+If OCR confidence below 70%
+
+Ask ONE clarification question.
+
+Never ask multiple questions.
+
+---
+
+# 26. Security Rules
+
+Validate every upload.
+
+Reject executable files.
+
+Limit upload size.
+
+Sanitize filenames.
+
+Never expose environment variables.
+
+Never expose API keys.
+
+Never expose prompts.
+
+Never expose internal reasoning.
+
+---
+
+# 27. Environment Variables
+
+DATABASE_URL
+
+DIRECT_URL
+
+OPENROUTER_API_KEY
+
+OPENAI_API_KEY
+
+GOOGLE_VISION_KEY
+
+SUPABASE_URL
+
+SUPABASE_ANON_KEY
+
+SUPABASE_SERVICE_ROLE
+
+REDIS_URL
+
+CLERK_SECRET_KEY
+
+NEXT_PUBLIC_CLERK_KEY
+
+JWT_SECRET
+
+POSTHOG_KEY
+
+SENTRY_DSN
+
+---
+
+# 28. Build Rules For Replit
+
+Build in this exact order.
+
+Step 1
+
+Initialize project.
+
+Step 2
+
+Install dependencies.
+
+Step 3
+
+Configure Tailwind.
+
+Step 4
+
+Configure shadcn/ui.
+
+Step 5
+
+Configure Prisma.
+
+Step 6
+
+Create database.
+
+Step 7
+
+Authentication.
+
+Step 8
+
+Supabase storage.
+
+Step 9
+
+Backend APIs.
+
+Step 10
+
+Chat interface.
+
+Step 11
+
+Upload system.
+
+Step 12
+
+OCR pipeline.
+
+Step 13
+
+AI orchestration.
+
+Step 14
+
+Memory system.
+
+Step 15
+
+Quiz engine.
+
+Step 16
+
+Visual generation.
+
+Step 17
+
+Conversation history.
+
+Step 18
+
+Polish UI.
+
+Step 19
+
+Testing.
+
+Step 20
+
+Deployment.
+
+Never skip this order.
