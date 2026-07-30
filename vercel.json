@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": "pnpm --filter ./artifacts/aethera run build",
-  "outputDirectory": "artifacts/aethera/dist/public",
+  "outputDirectory": "artifacts/aethera/dist",
   "framework": "vite",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
