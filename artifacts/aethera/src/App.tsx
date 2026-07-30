@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { CustomCursor } from '@/components/common/CustomCursor';
 import NotFound from '@/pages/not-found';
 import { Route, Switch, Router as WouterRouter } from 'wouter';
 import Landing from '@/pages/landing';
@@ -26,6 +27,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <CustomCursor />
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
           <Router />
         </WouterRouter>
