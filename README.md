@@ -129,6 +129,34 @@ Aethera-Build/
 
 ---
 
+## 🌐 Deploying to Vercel
+
+Aethera is pre-configured for one-click deployment on **Vercel** with a root `vercel.json` configuration.
+
+### Steps to Deploy on Vercel:
+
+1. **Import Repository in Vercel:**
+   - Go to [Vercel Dashboard](https://vercel.com/new).
+   - Import `https://github.com/tnex0734-ops/Aethera-Build`.
+
+2. **Configure Environment Variables (Secure API Key Exposure):**
+   Under **Environment Variables** in Vercel settings, add:
+   * **Key:** `VITE_GEMINI_API_KEY`
+   * **Value:** `your_google_gemini_api_key_here`
+
+3. **Deploy:**
+   - Click **Deploy**. Vercel will automatically run the build command (`pnpm --filter ./artifacts/aethera run build`) and serve the application globally with zero config required!
+
+---
+
+## 🔒 Security Best Practices
+
+* **API Key Protection:** The application uses client-side environment variable masking (`VITE_GEMINI_API_KEY`) and optional user session local storage. No plain-text API secrets are hardcoded in source control.
+* **Input Sanitization:** User prompts and Markdown responses are parsed cleanly to prevent XSS (Cross-Site Scripting) attacks.
+* **Content Safety:** Guardrail rules filter and block inappropriate or non-educational content.
+
+---
+
 ## 📜 License
 
 Distributed under the MIT License. See `LICENSE` for details.
